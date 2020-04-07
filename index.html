@@ -17,11 +17,6 @@
 
       #search-box {
         box-sizing: border-box;
-        position: absolute;
-        top: 12px;
-        left: 200px;
-        width: 300px;
-        height: 40px;
         padding: 5px; 
 
         background-color: white;
@@ -49,18 +44,23 @@
         width: 300px;
 
         box-sizing: border-box;
-        padding: 10px;
-
       }
 
       .title {
         user-select: none;
+        margin: 10px 0;
+        padding: 5px;
+      }
+
+      #helptext {
+        font-family: monospace;
+        padding: 5px;
       }
 
       #coordsJson {
         display: none;
-        margin-top: 20px;
         font-family: monospace;
+        padding: 5px;
       }
 
       #coords td {
@@ -78,17 +78,21 @@
   </head>
   <body>
     <div id="map"></div>
-    <div id="search-box">
-      <input id="search-text" type="textbox" value="San Francisco CA">
-      <input id="search-button" type="button" value="Search">
-    </div>
+
     <div id="coords-box">
-      <div class="title">Copy and paste these coordinates:</div>
-        <div id="coordsJson">
-          [
-          <table id="coordsTable">
-          </table>
-          ]
+      <div id="search-box">
+        <input id="search-text" type="textbox" value="San Francisco CA">
+        <input id="search-button" type="button" value="Search">
+      </div>
+      <div class="title">Coordinates:</div>
+      <div id="helptext">
+        Click or tap a shape on the map.
+      </div>
+      <div id="coordsJson">
+        [
+        <table id="coordsTable">
+        </table>
+        ]
       </div>
     </div>
 
@@ -116,8 +120,14 @@
           coordsTable.appendChild(tr);
         }
 
+        // hide the help text
+        var help = document.getElementById("helptext");
+        help.style.display = "none";
+
+        // show the coords
         var coordsJson = document.getElementById("coordsJson");
         coordsJson.style.display = "block";
+
         // select the coordinates
         window.getSelection().selectAllChildren(coordsJson);
       }
