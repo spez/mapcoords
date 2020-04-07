@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Map Coords</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      #map {
+        position: absolute;
+        top: 0px;
+        bottom: 0px;
+        left: 0px;
+        right: 300px;
+        border-right: 1px solid #222;
+        padding: 10px;
+      }
+
+      #coords-box {
+        position: absolute;
+        top: 0px;
+        bottom: 0px;
+        right: 0px;
+        width: 300px;
+
+        box-sizing: border-box;
+        padding: 10px;
+
+      }
+
+      .title {
+        user-select: none;
+      }
+
+      #coordsJson {
+        display: none;
+        margin-top: 20px;
+        font-family: monospace;
+      }
+
+      #coords td {
+        padding: 0 5px;
+      }
+
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+
+        font-family: sans-serif;  
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="coords-box">
+      <div class="title">Copy and paste these coordinates:</div>
+        <div id="coordsJson">
+          [
+          <table id="coordsTable">
+          </table>
+          ]
+      </div>
+    </div>
+
+    <script>
+      function coordRow(coord) {
+        var tr = document.createElement("tr");
+        
+        var latTD = document.createElement("td")
+        latTD.innerText = "(" + coord.lat().toFixed(4) + ","
+
+        var lngTD = document.createElement("td")
+        lngTD.innerText = coord.lng().toFixed(4) + "),"
+
+        tr.appendChild(latTD);
+        tr.appendChild(lngTD);
+        return tr;
+      }
+
+      function updateCoords(coords) {
+        var coordsTable = document.getElementById('coordsTable')
+        coordsTable.innerHTML = "";
+
+        for (coord of coords) {
+          var tr = coordRow(coord);
+          coordsTable.appendChild(tr);
+        }
+
+        var coordsJson = document.getElementById("coordsJson");
+        coordsJson.style.display = "block";
+        // select the coordinates
+        window.getSelection().selectAllChildren(coordsJson);
+      }
+
+      function initMap() {
+        var currentPoly = null;
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 37.7749, lng: -122.4194},
+          zoom: 10
+        });
+
+        var drawingManager = new google.maps.drawing.DrawingManager({
+          drawingMode: google.maps.drawing.OverlayType.POLYGON,
+          drawingControl: false,
+          drawingControlOptions: {
+            position: google.maps.ControlPosition.TOP_CENTER,
+            drawingModes: ['circle', 'polygon', 'rectangle']
+          },
+          polygonOptions: {
+          }
+        });
+        drawingManager.setMap(map);
+
+        google.maps.event.addListener(drawingManager, 'polygoncomplete', function(poly) {
+          // delete the old poly
+          if (currentPoly) {
+            currentPoly.setMap(null);
+          }
+          currentPoly = poly;
+
+          coords = poly.getPath().getArray();
+          updateCoords(coords);
+        });
+      }
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB78DVgH1RANz-MBvw1aIwEc7mL2VkWWdY&libraries=drawing&callback=initMap"
+         async defer></script>
+  </body>
+</html>
+
