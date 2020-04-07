@@ -15,6 +15,32 @@
         padding: 10px;
       }
 
+      #search-box {
+        box-sizing: border-box;
+        position: absolute;
+        top: 12px;
+        left: 200px;
+        width: 300px;
+        height: 40px;
+        padding: 5px; 
+
+        background-color: white;
+        border-radius: 2px;
+        box-shadow:rgba(0, 0, 0, 0.3) 0px 1px 4px -1px
+      }
+
+      #search-text {
+        box-sizing: border-box;
+        width: 210px;
+        height: 100%;
+      }
+
+      #search-button {
+        box-sizing: border-box;
+        height: 100%;
+        width: 70px;
+      }
+
       #coords-box {
         position: absolute;
         top: 0px;
@@ -52,6 +78,10 @@
   </head>
   <body>
     <div id="map"></div>
+    <div id="search-box">
+      <input id="search-text" type="textbox" value="San Francisco CA">
+      <input id="search-button" type="button" value="Search">
+    </div>
     <div id="coords-box">
       <div class="title">Copy and paste these coordinates:</div>
         <div id="coordsJson">
@@ -121,6 +151,21 @@
 
           coords = poly.getPath().getArray();
           updateCoords(coords);
+        });
+
+        // search stuff
+        var geocoder = new google.maps.Geocoder();
+        document.getElementById('search-button').addEventListener('click', function() {
+          var address = document.getElementById('search-text').value;
+          geocoder.geocode({'address': address}, function(results, status) {
+            if (status === 'OK') {
+              map.setCenter(results[0].geometry.location);
+              var marker = new google.maps.Marker({
+                map: map,
+                position: results[0].geometry.location
+             });
+            }
+          });
         });
       }
     </script>
